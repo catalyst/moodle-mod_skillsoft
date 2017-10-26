@@ -1,8 +1,7 @@
 <?php
 /*
  * @package		mod-skillsoft
- * @author		$Author$
- * @version		SVN: $Header$
+ * @author		martinholden1972@googlemail.com
  * @copyright	2009-2014 Martin Holden
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
