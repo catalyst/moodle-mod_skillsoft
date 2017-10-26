@@ -175,18 +175,18 @@ function xmldb_skillsoft_upgrade($oldversion) {
     	$result = true;
     }    
         
-    if ($result && $oldversion < 2015080400) {
+    if ($result && $oldversion < 20171001000) {
         $table = new xmldb_table('skillsoft');
         $field = new xmldb_field('completionsync', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
         if (!$dbman->field_exists($table,$field)) {
             $dbman->add_field($table, $field);
         }
 
-        upgrade_mod_savepoint(true, 2015080400, 'skillsoft');
+        upgrade_mod_savepoint(true, 20171001000, 'skillsoft');
         $result = true;
     }
 
-    if ($result && $oldversion < 2015082000) {
+    if ($result && $oldversion < 20171001001) {
         // Check for completed skillsoft activities that do not have a corresponding activity completion record.
         require_once($CFG->dirroot.'/mod/skillsoft/locallib.php');
         require_once($CFG->libdir.'/completionlib.php');
@@ -210,7 +210,7 @@ function xmldb_skillsoft_upgrade($oldversion) {
         }
         $moduleinstances->close();
 
-        upgrade_mod_savepoint(true, 2015082000, 'skillsoft');
+        upgrade_mod_savepoint(true, 20171001001, 'skillsoft');
         $result = true;
     }
 
