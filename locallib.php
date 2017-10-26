@@ -752,7 +752,6 @@ function skillsoft_getusername_from_loginname($skillport_loginname) {
 	if ($CFG->skillsoft_useridentifier == IDENTIFIER_USERID) {
 		if (!is_numeric($skillport_loginname) ) {
 			return 0;
-			break;
 		}
 	}
 
