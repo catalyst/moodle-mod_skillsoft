@@ -26,7 +26,7 @@ define('IDENTIFIER_USERNAME', 'username');
 /// Constants and settings for module skillsoft
 /// SSO actiontype for assets
 define('SSO_ASSET_ACTIONTYPE_LAUNCH', 'launch');
-define('SSO_ASSET_ACTIONTYPE_SUMMARY', 'summary')
+define('SSO_ASSET_ACTIONTYPE_SUMMARY', 'summary');
 
 define('SKILLSOFT_EVENT_ACTIVITY_VIEWED',0);
 define('SKILLSOFT_EVENT_ACTIVITY_MANAGEMENT_VIEWED',1);
