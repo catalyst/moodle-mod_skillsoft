@@ -172,7 +172,7 @@ class olsa_soapclient extends SoapClient{
 				// Check if any error occured
 				if(!curl_errno($ch))
 				{
-					$downloadresult = new object();
+					$downloadresult = new stdClass();
 					$downloadresult->status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 					$downloadresult->filename = $filename;
 					$downloadresult->filepath = $basefolder.'/'.$folder.'/'.$filename;
@@ -184,7 +184,7 @@ class olsa_soapclient extends SoapClient{
 					fclose($fp);
 					$error    = curl_error($ch);
 
-					$downloadresult = new object();
+					$downloadresult = new stdClass();
 					$downloadresult->status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 					$downloadresult->filename = '';
 					$downloadresult->filepath = '';
@@ -193,7 +193,7 @@ class olsa_soapclient extends SoapClient{
 			}
 		} else {
 			//We do so use it
-			$downloadresult = new object();
+			$downloadresult = new stdClass();
 			$downloadresult->status = '200';
 			$downloadresult->filename = $filename;
 			$downloadresult->filepath = $fullpath;

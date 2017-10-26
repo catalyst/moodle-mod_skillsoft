@@ -168,7 +168,7 @@ function skillsoft_get_user_grades($skillsoft, $userid=0) {
 				foreach ($auusers as $auuser) {
 					$rawgradeinfo =  skillsoft_grade_user($skillsoft, $auuser->userid);
 
-					$grades[$auuser->userid] = new object();
+					$grades[$auuser->userid] = new stdClass();
 					$grades[$auuser->userid]->id         = $auuser->userid;
 					$grades[$auuser->userid]->userid     = $auuser->userid;
 					$grades[$userid]->rawgrade = isset($rawgradeinfo->score) ? $rawgradeinfo->score : NULL;
@@ -188,7 +188,7 @@ function skillsoft_get_user_grades($skillsoft, $userid=0) {
 			}
 			$rawgradeinfo =  skillsoft_grade_user($skillsoft, $userid);
 
-			$grades[$userid] = new object();
+			$grades[$userid] = new stdClass();
 			$grades[$userid]->id         = $userid;
 			$grades[$userid]->userid     = $userid;
 			$grades[$userid]->rawgrade = isset($rawgradeinfo->score) ? $rawgradeinfo->score : NULL;
@@ -216,7 +216,7 @@ function skillsoft_update_grades($skillsoft=null, $userid=0, $nullifnone=true) {
 			if ($grades = skillsoft_get_user_grades($skillsoft, $userid)) {
 				skillsoft_grade_item_update($skillsoft, $grades);
 			} else if ($userid and $nullifnone) {
-				$grade = new object();
+				$grade = new stdClass();
 				$grade->userid   = $userid;
 				$grade->rawgrade = NULL;
 				skillsoft_grade_item_update($skillsoft, $grade);
@@ -329,7 +329,7 @@ function skillsoft_user_outline($course, $user, $mod, $skillsoft) {
 	$return = NULL;
 
 	if ($userdata = skillsoft_get_tracks($skillsoft->id, $user->id, $attempt)) {
-		$a = new object();
+		$a = new stdClass();
 		$a->attempt = $attempt;
 		if ($skillsoft->completable == true) {
 			$a->duration = isset($userdata->{'[CORE]time'}) ? $userdata->{'[CORE]time'} : '-';
@@ -339,7 +339,7 @@ function skillsoft_user_outline($course, $user, $mod, $skillsoft) {
 			$a->bestscore = $OUTPUT->help_icon( 'skillsoft_noncompletable','skillsoft',get_string('skillsoft_na','skillsoft'));
 		}
 		$a->accesscount = isset($userdata->{'[SUMMARY]accesscount'}) ? $userdata->{'[SUMMARY]accesscount'} : '-';
-		$return = new object();
+		$return = new stdClass();
 		$return->info = get_string("skillsoft_summarymessage", "skillsoft", $a);
 		$return->time = $userdata->{'[SUMMARY]lastaccess'};
 	}
