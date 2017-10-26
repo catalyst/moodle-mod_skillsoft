@@ -18,8 +18,7 @@ if (!isset($cm)) {
     $cm = get_coursemodule_from_instance('skillsoft', $skillsoft->id);
 }
 
-//$contextmodule = get_context_instance(CONTEXT_MODULE, $cm->id);
-$contextmodule = context_MODULE::instance($cm->id);
+$contextmodule = context_module::instance($cm->id);
 
 $row = array();
 $tabs  = array();

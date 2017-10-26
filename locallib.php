@@ -123,6 +123,45 @@ function skillsoft_check_sessionid($sessionid) {
 }
 
 /**
+ * Given a skillsoft object this will return the lauch url
+ *
+ * @param stdClass $skillsoft
+ * @return string
+ */
+function skillsoft_launch_url($skillsoft, $user) {
+	global $CFG;
+	if (stripos($skillsoft->launch,'?') !== false) {
+		$connector = '&';
+	} else {
+		$connector = '?';
+	}
+
+	$element = "";
+
+	/* We need logic here that if SSO url defined we use this */
+	if (!$CFG->skillsoft_usesso && strtolower($skillsoft->assetid) != 'sso') {
+		//skillsoft_ssourl is not defined so do AICC
+		$newkey = skillsoft_create_sessionid($user->id, $skillsoft->id);
+
+		$launcher = $skillsoft->launch;
+		//Section 508 Enhancement - add x508 value of $user->screenreader
+		if (isset($user->screenreader) && $user->screenreader == 1) {
+			$launcher .= $connector.'x508=1';
+		}
+		$launcher .= $connector.'aicc_sid='.$newkey.'&aicc_url='.$CFG->wwwroot.'/mod/skillsoft/aicchandler.php';
+
+		/*
+	 	* TODO: WE NEED LOGIC HERE TO HANDLE ADDING A NEW ATTEMPT WHEN USING TRACK TO LMS
+	 	*/
+	} else {
+		//we have skillsoft_ssourl so we replace {0} with $skillsoft->id
+		//$launcher = sprintf($CFG->skillsoft_ssourl,$skillsoft->assetid);
+		$launcher = sprintf($CFG->skillsoft_ssourl,$skillsoft->id);
+	}
+    return $launcher;
+}
+
+/**
  * Given an skillsoft object this will return
  * the HTML snippet for displaying the Launch Button
  * or output the HTML based on value of $return
@@ -203,48 +242,53 @@ function skillsoft_view_display($skillsoft, $user, $return=false) {
  * @return bool true if succesful
  */
 function skillsoft_insert_track($userid,$skillsoftid,$attempt,$element,$value) {
-	global $DB;
-	$id = null;
+    global $DB;
+    $id = null;
 
-	//Work to support multiple attempts
-	//$attempt = 1;
+    //Work to support multiple attempts
+    //$attempt = 1;
 
-	/* 13-SEP-2013
-	 * Added error trap to convert $value=NULL to null string ""
-	 */
-	if ($value===NULL) {
-		$value = "";
-	}
-	
-	$params = array($userid,$skillsoftid,$attempt,$element);
-	if ($track = $DB->get_record_select('skillsoft_au_track',"userid=? AND skillsoftid=? AND attempt=? AND element=?",$params)) {
-	
-		$track->value = $value;
-		$track->timemodified = time();
-		$id = $DB->update_record('skillsoft_au_track',$track);
-	} else {
-		$track = new stdClass();
-		$track->userid = $userid;
-		$track->skillsoftid = $skillsoftid;
-		$track->attempt = $attempt;
-		$track->element = $element;
-		//$track->value = addslashes($value);
-		$track->value = $value;
-		$track->timemodified = time();
-		$id = $DB->insert_record('skillsoft_au_track',$track);
-	}
+    /* 13-SEP-2013
+     * Added error trap to convert $value=NULL to null string ""
+     */
+    if ($value===NULL) {
+        $value = "";
+    }
 
-	//if we have a best score OR we have passed/completed status then update the gradebook
-	if ( strstr($element, ']bestscore') ||
-	(strstr($element,']lesson_status') && (substr($track->value,0,1) == 'c' || substr($track->value,0,1) == 'p'))
-	) {
-		$conditions = array('id'=> $skillsoftid);
-		$skillsoft = $DB->get_record('skillsoft', $conditions);
-		include_once('lib.php');
-		skillsoft_update_grades($skillsoft, $userid);
+    $params = array($userid,$skillsoftid,$attempt,$element);
+    if ($track = $DB->get_record_select('skillsoft_au_track',"userid=? AND skillsoftid=? AND attempt=? AND element=?",$params)) {
+
+        $track->value = $value;
+        $track->timemodified = time();
+        $id = $DB->update_record('skillsoft_au_track',$track);
+    } else {
+        $track = new stdClass();
+        $track->userid = $userid;
+        $track->skillsoftid = $skillsoftid;
+        $track->attempt = $attempt;
+        $track->element = $element;
+        //$track->value = addslashes($value);
+        $track->value = $value;
+        $track->timemodified = time();
+        $id = $DB->insert_record('skillsoft_au_track',$track);
+    }
+
+    //if we have a best score OR we have passed/completed status then update the gradebook
+    if ( strstr($element, ']bestscore') ||
+        (strstr($element,']lesson_status') && (substr($track->value,0,1) == 'c' || substr($track->value,0,1) == 'p'))
+    ) {
+        $conditions = array('id'=> $skillsoftid);
+        $skillsoft = $DB->get_record('skillsoft', $conditions);
+        include_once('lib.php');
+        skillsoft_update_grades($skillsoft, $userid);
+    }
+
+	// Update Moodle Completion status.
+    if (strstr($element,']lesson_status') && (substr($track->value, 0, 1) == 'c' || substr($track->value, 0, 1) == 'p')) {
+		skillsoft_setActivityCompletionState($userid, $skillsoftid, $track->value);
 	}
-	//print_object($track);
-	return $id;
+    //print_object($track);
+    return $id;
 }
 
 /**
@@ -312,6 +356,39 @@ function skillsoft_setCompletedDate($userid,$skillsoftid,$attempt,$time) {
 	return $id;
 }
 
+/**
+ * setActivityCompletionState
+ *
+ * If skillsoft completion is enabled, update the activity completion state
+ *
+ * @param $userid
+ * @param $skillsoftid
+ * @param $state
+ * @param int $timecompleted Optional manually set completion time.
+ */
+function skillsoft_setActivityCompletionState($userid,$skillsoftid,$state,$timecompleted=false) {
+    global $CFG, $DB;
+
+    $completionsync = $DB->get_field('skillsoft', 'completionsync', array('id' => $skillsoftid));
+    $courseid = $DB->get_field('skillsoft', 'course', array('id' => $skillsoftid));
+    if ($completionsync) {
+        require_once($CFG->libdir.'/completionlib.php');
+        $completion = new completion_info(get_course($courseid));
+        $cm = get_coursemodule_from_instance('skillsoft', $skillsoftid, $courseid);
+        if ($timecompleted) {
+            $cm->timecompleted = $timecompleted;
+        }
+        if ((substr($state,0,1) == 'c' || substr($state,0,1) == 'p')) {
+            // Mark course as completed
+            $completion->update_state($cm, COMPLETION_COMPLETE, $userid);
+
+        } else if ($completionsync == 2) {
+            // Mark course as incomplete
+            $completion->update_state($cm, COMPLETION_INCOMPLETE, $userid);
+        }
+        $completion->invalidatecache($courseid, $userid, true);
+    }
+}
 
 /**
  * setAccessCount
@@ -675,7 +752,6 @@ function skillsoft_getusername_from_loginname($skillport_loginname) {
 	if ($CFG->skillsoft_useridentifier == IDENTIFIER_USERID) {
 		if (!is_numeric($skillport_loginname) ) {
 			return 0;
-			break;
 		}
 	}
 
@@ -1349,14 +1425,8 @@ function skillsoft_process_received_customreport($handle, $trace=false, $prefix=
 	}
 }
 
-function skillsoft_get_moodle_version_major() { 
-     global $CFG; 
-  
-     $version_array = explode('.', $CFG->version); 
-     return $version_array[0]; 
-} 
-
-function skillsoft_event_log_standard($event_type, $skillsoft, $context, $cm) {
+function skillsoft_event_log($event_type, $skillsoft, $context, $cm) {
+    // TODO: this overwrites context passed?
     $context = context_module::instance($cm->id);
     $event_properties = array('context' => $context, 'objectid' => $skillsoft->id);
 
@@ -1369,42 +1439,7 @@ function skillsoft_event_log_standard($event_type, $skillsoft, $context, $cm) {
             break;
         case SKILLSOFT_EVENT_REPORT_VIEWED:
             $event = \mod_skillsoft\event\report_viewed::create($event_properties);
-            break;            
+            break;
     }
     $event->trigger();
-}
-
-function skillsoft_event_log_legacy($event_type, $skillsoft, $context, $cm) {
-    global $DB;
-
-    switch ($event_type) {
-        case SKILSOFT_EVENT_ACTIVITY_VIEWED:
-            $event = 'view';
-            break;
-        case SKILLSOFT_EVENT_ACTIVITY_MANAGEMENT_VIEWED:
-            $event = 'view all';
-            break;
-        case constant(SKILLSOFT_EVENT_REPORT_VIEWED) :    
-        	$event = "view report";
-        	break;
-        default:
-            return;
-    }
-    $course = $DB->get_record('course', array('id' => $skillsoft->course), '*', MUST_EXIST);
-
-    add_to_log($course->id, 'skillsoft', $event, '', $skillsoft->name, $cm->id);
-}
-
-function skillsoft_event_log($event_type, $skillsoft, $context, $cm) {
-    global $CFG;
-
-    $version_major = skillsoft_get_moodle_version_major();
-    if ( $version_major < '2014051200' ) {
-        //This is valid before v2.7
-        skillsoft_event_log_legacy($event_type, $skillsoft, $context, $cm);
-
-    } else {
-        //This is valid after v2.7
-        skillsoft_event_log_standard($event_type, $skillsoft, $context, $cm);
-    }
 }

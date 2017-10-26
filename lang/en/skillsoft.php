@@ -19,7 +19,7 @@ $string['modulename_help'] = '<p>This module provides a way to simply create a n
 
 <strong>Skillsoft Open Learning Services Architecture (OLSA)</strong>
 <p>The Skillsoft Open Learning Services Architecture (OLSA) is an enhancements to the Skillsoft Skillport LMS architecture.</p>
-<p>It is made up of two components:</p> 
+<p>It is made up of two components:</p>
 <ul>
 <li>LMS Interface - This provides a means for Moodle to launch Skillsoft assets using the industry standard AICC HACP method.</li>
 <li>Web Services - This provides a means for another system to interact with Skillport using standards based Web Services. These provide the functionality in this module to support retrieving of course metadata and synchronising progress between the systems</li>
@@ -110,7 +110,6 @@ $string['skillsoft_strictaiccstudentiddesc'] = 'When enabled the AICC handler en
 //May 2014
 $string['skillsoft_aiccwindowsettings'] = 'Default window settings for AICC launches';
 $string['skillsoft_aiccwindowsettingsdesc'] = 'The settings to use for the popup window for AICC launches for example width=800,height=600';
-
 
 //mod_form.php
 $string['skillsoft_assetid'] = 'Asset ID';
@@ -324,3 +323,21 @@ $string['skillsoft_allattempt'] = 'All Attempts';
 $string['skillsoft_info'] = 'Info';
 $string['skillsoft_results'] = 'Results';
 $string['skillsoft_allresults'] = 'All Users Results';
+
+//cron
+$string['skillsoft_cron_start'] = 'Running mod_skillsoft cron';
+$string['skillsoft_cron_end'] = 'Done';
+
+
+$string['dc:identifier'] = 'Asset ID';
+$string['dc:title'] = 'Name';
+$string['dc:language'] = 'Language';
+$string['olsa:duration'] = 'Duration';
+$string['dc:description'] = 'Description';
+$string['olsa:prerequisites'] = 'Prerequisites';
+
+// Custom completion
+$string['completionskillsoft'] = 'Skillsoft Completion';
+$string['trackingskillsoft'] = 'Track remote completion status';
+$string['firstcomplete'] = 'Use first pass';
+$string['lastattempt'] = 'Use last attempt';

@@ -43,6 +43,8 @@ function skillsoft_iscompletable($skillsoft) {
 function skillsoft_add_instance($skillsoft) {
 	global $CFG, $DB;
 
+    require_once('locallib.php'); // Needed for constants, that should probably move to this file
+
 	$skillsoft->timecreated = time();
 	$skillsoft->timemodified = time();
 	$skillsoft->completable = skillsoft_iscompletable($skillsoft);
@@ -71,6 +73,9 @@ function skillsoft_add_instance($skillsoft) {
 		}
 	}
 
+    $DB->set_field('course_modules', 'learningtime', ($skillsoft->duration * 60),
+        array('id' => $skillsoft->coursemodule));
+
 	return $result;
 }
 
@@ -92,6 +97,9 @@ function skillsoft_update_instance($skillsoft) {
 	if ($result = $DB->update_record('skillsoft', $skillsoft)) {
 		skillsoft_grade_item_update($skillsoft,NULL);
 	}
+
+    $DB->set_field('course_modules', 'learningtime', ($skillsoft->duration * 60),
+        array('id' => $skillsoft->coursemodule));
 
 	return $result;
 }
@@ -158,7 +166,7 @@ function skillsoft_get_user_grades($skillsoft, $userid=0) {
 				foreach ($auusers as $auuser) {
 					$rawgradeinfo =  skillsoft_grade_user($skillsoft, $auuser->userid);
 
-					$grades[$auuser->userid] = new object();
+					$grades[$auuser->userid] = new stdClass();
 					$grades[$auuser->userid]->id         = $auuser->userid;
 					$grades[$auuser->userid]->userid     = $auuser->userid;
 					$grades[$userid]->rawgrade = isset($rawgradeinfo->score) ? $rawgradeinfo->score : NULL;
@@ -178,7 +186,7 @@ function skillsoft_get_user_grades($skillsoft, $userid=0) {
 			}
 			$rawgradeinfo =  skillsoft_grade_user($skillsoft, $userid);
 
-			$grades[$userid] = new object();
+			$grades[$userid] = new stdClass();
 			$grades[$userid]->id         = $userid;
 			$grades[$userid]->userid     = $userid;
 			$grades[$userid]->rawgrade = isset($rawgradeinfo->score) ? $rawgradeinfo->score : NULL;
@@ -206,7 +214,7 @@ function skillsoft_update_grades($skillsoft=null, $userid=0, $nullifnone=true) {
 			if ($grades = skillsoft_get_user_grades($skillsoft, $userid)) {
 				skillsoft_grade_item_update($skillsoft, $grades);
 			} else if ($userid and $nullifnone) {
-				$grade = new object();
+				$grade = new stdClass();
 				$grade->userid   = $userid;
 				$grade->rawgrade = NULL;
 				skillsoft_grade_item_update($skillsoft, $grade);
@@ -319,7 +327,7 @@ function skillsoft_user_outline($course, $user, $mod, $skillsoft) {
 	$return = NULL;
 
 	if ($userdata = skillsoft_get_tracks($skillsoft->id, $user->id, $attempt)) {
-		$a = new object();
+		$a = new stdClass();
 		$a->attempt = $attempt;
 		if ($skillsoft->completable == true) {
 			$a->duration = isset($userdata->{'[CORE]time'}) ? $userdata->{'[CORE]time'} : '-';
@@ -329,7 +337,7 @@ function skillsoft_user_outline($course, $user, $mod, $skillsoft) {
 			$a->bestscore = $OUTPUT->help_icon( 'skillsoft_noncompletable','skillsoft',get_string('skillsoft_na','skillsoft'));
 		}
 		$a->accesscount = isset($userdata->{'[SUMMARY]accesscount'}) ? $userdata->{'[SUMMARY]accesscount'} : '-';
-		$return = new object();
+		$return = new stdClass();
 		$return->info = get_string("skillsoft_summarymessage", "skillsoft", $a);
 		$return->time = $userdata->{'[SUMMARY]lastaccess'};
 	}
@@ -444,8 +452,7 @@ function skillsoft_print_recent_activity($course, $isteacher, $timestart) {
 	$names = array();
 	foreach ($records as $id => $record){
 		if ($cm = get_coursemodule_from_instance('skillsoft', $record->id, $course->id)) {
-			//$context = get_context_instance(CONTEXT_MODULE, $cm->id);
-			$context = context_MODULE::instance($cm->id);
+            $context = context_module::instance($cm->id);
 			if (has_capability('mod/skillsoft:viewreport', $context)) {
 				$name = '<a href="'.new moodle_url('/mod/skillsoft/report.php', array('id'=>$cm->id)).'">'.$record->name.'</a>'.'&nbsp;';
 				if ($record->countlaunches > 1) {
@@ -779,6 +786,7 @@ function skillsoft_cron () {
 			skillsoft_customreport($CFG->skillsoft_reportincludetoday);
 		}
 	}
+
 	return true;
 }
 
@@ -880,8 +888,9 @@ function skillsoft_uninstall() {
 /**
  * @uses FEATURE_MOD_INTRO
  * @uses FEATURE_COMPLETION_TRACKS_VIEWS
+ * @uses FEATURE_COMPLETION_HAS_RULES
  * @uses FEATURE_GRADE_HAS_GRADE
- * @users FEATURE_BACKUP_MOODLE2
+ * @uses FEATURE_BACKUP_MOODLE2
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed True if module supports feature, false if not, null if doesn't know
  */
@@ -889,8 +898,63 @@ function skillsoft_supports($feature) {
 	switch($feature) {
 		case FEATURE_MOD_INTRO:               return true;
 		case FEATURE_COMPLETION_TRACKS_VIEWS: return true;
+        case FEATURE_COMPLETION_HAS_RULES:    return true;
 		case FEATURE_GRADE_HAS_GRADE:         return true;
 		case FEATURE_BACKUP_MOODLE2:          return true;
 		default: return null;
 	}
+}
+
+/**
+ * Obtains the automatic completion state for this module based on any conditions
+ * in module settings.
+ *
+ * @param object $course Course
+ * @param object $cm Course-module
+ * @param int $userid User ID
+ * @param bool $type Type of comparison (or/and; can be used as return value if no conditions)
+ * @return bool True if completed, false if not, $type if conditions not set.
+ */
+function skillsoft_get_completion_state($course,$cm,$userid,$type) {
+    global $DB;
+
+    $completionsync = $DB->get_field('skillsoft', 'completionsync', array('id' => $cm->instance));
+    if ($completionsync == 0) {
+        return $type;
+    }
+    $records = $DB->get_records('skillsoft_au_track', array(
+        'skillsoftid' => $cm->instance,
+        'userid' => $userid,
+        'element' => '[CORE]lesson_status',
+    ));
+    $exists = false;
+    foreach ($records as $record) {
+        if ($record->value == 'completed' || $record->value == 'passed') {
+            $exists = true;
+        } else if ($completionsync == 2) {
+            $exists = false;
+        }
+    }
+    return $exists;
+}
+
+/**
+ * Given a course_module object, this function returns any
+ * "extra" information that may be needed when printing
+ * this activity in a course listing.
+ *
+ * See {@link get_array_of_activities()} in course/lib.php
+ *
+ * @param stdClass $coursemodule
+ * @return cached_cm_info info
+ */
+function skillsoft_get_coursemodule_info($coursemodule) {
+    global $CFG;
+
+    $fullurl = "$CFG->wwwroot/mod/skillsoft/launch.php?id=$coursemodule->id";
+    $wh = "width=800,height=600";
+
+    $info = new cached_cm_info();
+    $info->onclick = "window.open('$fullurl', 'courseWindow', '$wh'); return false;";
+    return $info;
 }

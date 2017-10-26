@@ -13,10 +13,7 @@ require_once($CFG->dirroot.'/mod/skillsoft/olsalib.php');
 global $CFG;
 
 $url = new moodle_url('/mod/skillsoft/olsadiag.php');
-//$context = get_context_instance(CONTEXT_SYSTEM);
-
 $context = context_SYSTEM::instance();
-
 
 require_login();
 require_capability('moodle/site:config', $context);
