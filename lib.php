@@ -72,9 +72,10 @@ function skillsoft_add_instance($skillsoft) {
 			skillsoft_reset_processed($skillsoft->assetid);
 		}
 	}
-
-    $DB->set_field('course_modules', 'learningtime', ($skillsoft->duration * 60),
-        array('id' => $skillsoft->coursemodule));
+    if (file_exists($CFG->wwwroot.'/totara/hierarchy')) {
+        $DB->set_field('course_modules', 'learningtime', ($skillsoft->duration * 60),
+            array('id' => $skillsoft->coursemodule));
+    }
 
 	return $result;
 }
@@ -98,8 +99,10 @@ function skillsoft_update_instance($skillsoft) {
 		skillsoft_grade_item_update($skillsoft,NULL);
 	}
 
-    $DB->set_field('course_modules', 'learningtime', ($skillsoft->duration * 60),
-        array('id' => $skillsoft->coursemodule));
+    if (file_exists($CFG->wwwroot.'/totara/hierarchy')) {
+        $DB->set_field('course_modules', 'learningtime', ($skillsoft->duration * 60),
+            array('id' => $skillsoft->coursemodule));
+    }
 
 	return $result;
 }
