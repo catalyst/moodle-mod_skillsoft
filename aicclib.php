@@ -48,7 +48,6 @@ class StringTokenizer {
 	 */
 	public function __destruct()
 	{
-		unset($this);
 	}
 
 	/**
