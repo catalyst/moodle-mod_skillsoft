@@ -44,14 +44,6 @@ class StringTokenizer {
 	}
 
 	/**
-	 * @return unknown_type
-	 */
-	public function __destruct()
-	{
-		unset($this);
-	}
-
-	/**
 	 * Tests if there are more tokens available from this tokenizer's string. It
 	 * does not move the internal pointer in any way. To move the internal pointer
 	 * to the next element call nextToken()
