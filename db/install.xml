@@ -1,25 +1,28 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<XMLDB PATH="mod/skillsoft/db" VERSION="2016082300" COMMENT="XMLDB file for Moodle mod/skillsoft" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/skillsoft/db" VERSION="20180704" COMMENT="XMLDB file for Moodle mod/skillsoft"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
   <TABLES>
-    <TABLE NAME="skillsoft" COMMENT="each table is one skillsoft asset and its configuration" NEXT="skillsoft_au_track">
+    <TABLE NAME="skillsoft" COMMENT="each table is one skillsoft asset and its configuration">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="course"/>
-        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="assetid"/>
-        <FIELD NAME="assetid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="This is the unique SkillSoft asset id" PREVIOUS="course" NEXT="name"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The asset title" PREVIOUS="assetid" NEXT="intro"/>
-        <FIELD NAME="intro" TYPE="text" LENGTH="small" NOTNULL="true" SEQUENCE="false" PREVIOUS="name" NEXT="introformat"/>
-        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="intro" NEXT="audience"/>
-        <FIELD NAME="audience" TYPE="text" LENGTH="small" NOTNULL="true" SEQUENCE="false" PREVIOUS="introformat" NEXT="prereq"/>
-        <FIELD NAME="prereq" TYPE="text" LENGTH="small" NOTNULL="true" SEQUENCE="false" COMMENT="The asset pre-requisites" PREVIOUS="audience" NEXT="launch"/>
-        <FIELD NAME="launch" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The AICC launch url for the asset" PREVIOUS="prereq" NEXT="mastery"/>
-        <FIELD NAME="mastery" TYPE="char" LENGTH="5" NOTNULL="false" SEQUENCE="false" COMMENT="The AICC mastery score for the asset" PREVIOUS="launch" NEXT="assettype"/>
-        <FIELD NAME="assettype" TYPE="char" LENGTH="128" NOTNULL="false" SEQUENCE="false" COMMENT="The SkillSoft asset type" PREVIOUS="mastery" NEXT="duration"/>
-        <FIELD NAME="duration" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="The duration in minutes of the asset" PREVIOUS="assettype" NEXT="completable"/>
-        <FIELD NAME="completable" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="1" SEQUENCE="false" COMMENT="Indicates if the asset can return a score and be completed. SkillSoft assets sucha s books and passive content, never return these states to the LMS" PREVIOUS="duration" NEXT="timemodified"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="completable" NEXT="timecreated"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timemodified" NEXT="aiccwindowsettings"/>
-        <FIELD NAME="aiccwindowsettings" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="The settings for the popup window for AICC launch" PREVIOUS="timecreated" NEXT="completionsync"/>
-        <FIELD NAME="completionsync" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="aiccwindowsettings"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="assetid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="This is the unique SkillSoft asset id"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The asset title"/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="audience" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="prereq" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="The asset pre-requisites"/>
+        <FIELD NAME="launch" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="The AICC launch url for the asset"/>
+        <FIELD NAME="mastery" TYPE="char" LENGTH="5" NOTNULL="false" SEQUENCE="false" COMMENT="The AICC mastery score for the asset"/>
+        <FIELD NAME="assettype" TYPE="char" LENGTH="128" NOTNULL="false" SEQUENCE="false" COMMENT="The SkillSoft asset type"/>
+        <FIELD NAME="duration" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The duration in minutes of the asset"/>
+        <FIELD NAME="completable" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Indicates if the asset can return a score and be completed. SkillSoft assets sucha s books and passive content, never return these states to the LMS"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="aiccwindowsettings" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" COMMENT="The settings for the popup window for AICC launch"/>
+        <FIELD NAME="completionsync" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -28,54 +31,54 @@
         <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="skillsoft_au_track" COMMENT="to track AUs" PREVIOUS="skillsoft" NEXT="skillsoft_session_track">
+    <TABLE NAME="skillsoft_au_track" COMMENT="to track AUs">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="skillsoftid" />
-        <FIELD NAME="skillsoftid" TYPE="int" LENGTH="10" NOTNULL="true"	UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="userid" />
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="skillsoftid" NEXT="attempt" />
-        <FIELD NAME="attempt" TYPE="int" LENGTH="10" NOTNULL="true"	UNSIGNED="true" DEFAULT="1" SEQUENCE="false" PREVIOUS="userid"	NEXT="element" />
-        <FIELD NAME="element" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="attempt" NEXT="value" />
-        <FIELD NAME="value" TYPE="text" LENGTH="big" NOTNULL="true"	SEQUENCE="false" PREVIOUS="element" NEXT="timemodified" />
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="value" />
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="skillsoftid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="attempt" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
+        <FIELD NAME="element" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="value" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="userid-skillsoftid-attempt-element" UNIQUE="true" FIELDS="userid, skillsoftid, attempt, element" NEXT="userid" />
-        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid" PREVIOUS="userid-skillsoftid-attempt-element" NEXT="element" />
-        <INDEX NAME="element" UNIQUE="false" FIELDS="element" PREVIOUS="userid" />
+        <INDEX NAME="userid-skillsoftid-attempt-element" UNIQUE="true" FIELDS="userid, skillsoftid, attempt, element"/>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
+        <INDEX NAME="element" UNIQUE="false" FIELDS="element"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="skillsoft_session_track" COMMENT="to track sessions" PREVIOUS="skillsoft_au_track" NEXT="skillsoft_tdr">
+    <TABLE NAME="skillsoft_session_track" COMMENT="to track sessions">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="sessionid" />
-        <FIELD NAME="sessionid" TYPE="char" LENGTH="128" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="skillsoftid" />
-        <FIELD NAME="skillsoftid" TYPE="int" LENGTH="10" NOTNULL="true"	UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="sessionid" NEXT="userid" />
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="skillsoftid" NEXT="timecreated" />
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="userid" />
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="sessionid" TYPE="char" LENGTH="128" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="skillsoftid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
       <INDEXES>
-        <INDEX NAME="sessionid-userid-skillsoftid" UNIQUE="true" FIELDS="sessionid, userid, skillsoftid" NEXT="userid" />
-        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"	PREVIOUS="sessionid-userid-skillsoftid" />
+        <INDEX NAME="sessionid-userid-skillsoftid" UNIQUE="true" FIELDS="sessionid, userid, skillsoftid"/>
+        <INDEX NAME="userid" UNIQUE="false" FIELDS="userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="skillsoft_tdr" COMMENT="to store received TDR records" PREVIOUS="skillsoft_session_track" NEXT="skillsoft_report_track">
+    <TABLE NAME="skillsoft_tdr" COMMENT="to store received TDR records">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="tdrid"/>
-        <FIELD NAME="tdrid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="timestamp"/>
-        <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="tdrid" NEXT="userid"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="timestamp" NEXT="username"/>
-        <FIELD NAME="username" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="null" SEQUENCE="false" PREVIOUS="userid" NEXT="assetid"/>
-        <FIELD NAME="assetid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="This is the unique SkillSoft asset id" PREVIOUS="username" NEXT="reset"/>
-        <FIELD NAME="reset" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="assetid" NEXT="format"/>
-        <FIELD NAME="format" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="reset" NEXT="data"/>
-        <FIELD NAME="data" TYPE="text" LENGTH="small" NOTNULL="true" SEQUENCE="false" PREVIOUS="format" NEXT="context"/>
-        <FIELD NAME="context" TYPE="text" LENGTH="small" NOTNULL="true" SEQUENCE="false" PREVIOUS="data" NEXT="processed"/>
-        <FIELD NAME="processed" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="context"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="tdrid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timestamp" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="username" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="null" SEQUENCE="false"/>
+        <FIELD NAME="assetid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="This is the unique SkillSoft asset id"/>
+        <FIELD NAME="reset" TYPE="int" LENGTH="1" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="format" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="data" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="context" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="processed" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -84,47 +87,47 @@
         <INDEX NAME="tdrid-assetid-userid" UNIQUE="true" FIELDS="tdrid, assetid, userid"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="skillsoft_report_track" COMMENT="to track the requested SkillPort reports" PREVIOUS="skillsoft_tdr" NEXT="skillsoft_report_results">
+    <TABLE NAME="skillsoft_report_track" COMMENT="to track the requested SkillPort reports">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="startdate" />
-        <FIELD NAME="startdate" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" PREVIOUS="id" NEXT="enddate" />
-        <FIELD NAME="enddate" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" PREVIOUS="startdate" NEXT="handle" />
-        <FIELD NAME="handle" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" PREVIOUS="enddate" NEXT="url" />
-        <FIELD NAME="url" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="handle" NEXT="localpath" />
-        <FIELD NAME="localpath" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" PREVIOUS="url" NEXT="polled" />
-        <FIELD NAME="polled" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="localpath" NEXT="downloaded"/>
-        <FIELD NAME="downloaded" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="polled" NEXT="imported"/>
-        <FIELD NAME="imported" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="downloaded" NEXT="processed"/>
-        <FIELD NAME="processed" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="imported" NEXT="timerequested"/>
-        <FIELD NAME="timerequested" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="processed" NEXT="timepolled"/>
-        <FIELD NAME="timepolled" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timerequested" NEXT="timedownloaded"/>
-        <FIELD NAME="timedownloaded" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timepolled" NEXT="timeimported"/>
-        <FIELD NAME="timeimported" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timedownloaded" NEXT="timeprocessed"/>        
-        <FIELD NAME="timeprocessed" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="timeimported" />
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="startdate" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="enddate" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="handle" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="url" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="localpath" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="polled" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="downloaded" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="imported" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="processed" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timerequested" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timepolled" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timedownloaded" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timeimported" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timeprocessed" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="skillsoft_report_results" COMMENT="to store received results records" PREVIOUS="skillsoft_report_track">
+    <TABLE NAME="skillsoft_report_results" COMMENT="to store received results records">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="loginname"/>
-        <FIELD NAME="loginname" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="null" SEQUENCE="false" PREVIOUS="id" NEXT="lastname"/>
-        <FIELD NAME="lastname" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="null" SEQUENCE="false" PREVIOUS="loginname" NEXT="firstname"/>
-        <FIELD NAME="firstname" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="null" SEQUENCE="false" PREVIOUS="lastname" NEXT="assetid"/>
-        <FIELD NAME="assetid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="This is the unique SkillSoft course id" PREVIOUS="firstname" NEXT="firstaccessdate"/>
-        <FIELD NAME="firstaccessdate" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="assetid" NEXT="lastaccessdate" />
-        <FIELD NAME="lastaccessdate" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="firstaccessdate" NEXT="completeddate" />
-        <FIELD NAME="completeddate" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="lastaccessdate" NEXT="firstscore" />
-        <FIELD NAME="firstscore" TYPE="number" LENGTH="10" DECIMALS="2" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="completeddate" NEXT="currentscore"/>
-        <FIELD NAME="currentscore" TYPE="number" LENGTH="10" DECIMALS="2" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="firstscore" NEXT="bestscore"/>
-        <FIELD NAME="bestscore" TYPE="number" LENGTH="10" DECIMALS="2" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="currentscore" NEXT="lessonstatus"/>
-        <FIELD NAME="lessonstatus" TYPE="char" LENGTH="30" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="bestscore" NEXT="duration"/>
-        <FIELD NAME="duration" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="lessonstatus" NEXT="accesscount"/>
-        <FIELD NAME="accesscount" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="duration" NEXT="userid"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="accesscount" NEXT="processed"/>
-        <FIELD NAME="processed" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="userid" NEXT="attempt"/>
-        <FIELD NAME="attempt" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="processed"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="loginname" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="null" SEQUENCE="false"/>
+        <FIELD NAME="lastname" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="null" SEQUENCE="false"/>
+        <FIELD NAME="firstname" TYPE="char" LENGTH="255" NOTNULL="false" DEFAULT="null" SEQUENCE="false"/>
+        <FIELD NAME="assetid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="This is the unique SkillSoft course id"/>
+        <FIELD NAME="firstaccessdate" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="lastaccessdate" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="completeddate" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="firstscore" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>
+        <FIELD NAME="currentscore" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>
+        <FIELD NAME="bestscore" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>
+        <FIELD NAME="lessonstatus" TYPE="char" LENGTH="30" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="duration" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="accesscount" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="processed" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="attempt" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -132,4 +135,3 @@
     </TABLE>
   </TABLES>
 </XMLDB>
-
