@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/skillsoft/db" VERSION="20180704" COMMENT="XMLDB file for Moodle mod/skillsoft"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+<XMLDB PATH="mod/skillsoft/db" VERSION="20180705" COMMENT="XMLDB file for Moodle mod/skillsoft"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
     <TABLE NAME="skillsoft" COMMENT="each table is one skillsoft asset and its configuration">
